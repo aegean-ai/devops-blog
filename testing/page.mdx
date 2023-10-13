@@ -1,0 +1,64 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+import Image from 'next/image'
+import terraform from './images/terraform-immutable-infrastructure.png'
+
+export const article = {
+  author: 'Adam Wathan',
+  date: '2023-10-20',
+  title: 'Rewriting the AI Book',
+  description:
+    'When we released the first version of cosmOS last year, it was written in Go. Go is a wonderful programming language, but it’s been a while since I’ve seen an article on the front page of Hacker News about rewriting some important tool in Go and I see articles on there about rewriting things in Rust every single week.',
+}
+
+export const metadata = {
+  title: article.title,
+  description: article.description,
+}
+
+export default (props) => <ArticleLayout article={article} {...props} />
+
+# Infrastructure as Code
+
+We adopted native terraform as the way to express IoC and at the same time allow for multi-cloud deployment. Our IoC bible is  cite `terraform-up-and-running`. We do not use the terraform CLI directly though but we follow the the recommendation of the IoC bible and use `terragrunt` as a wrapper around terraform.  Terragrunt offers significant Dont Repeat Yourself (DRY) benefits in our IoC code.
+
+
+Please note that any reference to K8s in this document is also applicable to Nomad. We use Nomad for all app deployments due to the complexities of maintaining a k8s infrastructure.
+
+
+## Understanding the big picture
+
+There is a plethora of tools that one can select to implement infrastructure as a code. After reviewing many including CDK and CDK for terraform, we came to agree with the conclusion of Chapter 1 of cite`terraform-up-and-running`. 
+
+<Image src={terraform} alt="" />
+
+We use Packer to create a VM images that has Docker, Kubernetes, Nomad / Consul agents installed and we then use Terraform to deploy a cluster of servers, each of which runs these VM images, and the rest of our infrastructure, including the network topology (i.e., VPCs, subnets, route tables), data stores (e.g., MySQL, Redis), and load balancers. Finally, when the cluster boots up, it forms a Kubernetes / Nomad cluster supported by that you use to run and manage your Dockerized applications, as shown in the figure above. 
+
+The advantage of this approach is that Docker images build fairly quickly, you can run and test them on your local computer, and you can take advantage of all of the built-in functionality of Kubernetes / Nomad, including various deployment strategies, auto healing, auto scaling, and so on. 
+
+The drawback is the added complexity, both in terms of extra infrastructure to run (Kubernetes clusters are difficult and expensive to deploy and operate, though most major cloud providers now provide managed Kubernetes services, which can offload some of this work) and in terms of several extra layers of abstraction (Kubernetes, Docker, Packer) to learn, manage, and debug.
+
+We also accommodate Nomad for all edge deployments. 
+
+## Lessons Learned
+
+The following lessons are quoted in the IoC bible cite `terraform-up-and-running`. 
+
+### No TF Workspaces
+
+Terraform workspaces can be a great way to quickly spin up and tear down different versions of your code, but they have a few drawbacks:
+
+* The state files for all of your workspaces are stored in the same backend (e.g., the same S3 bucket). That means you use the same authentication and access controls for all the workspaces, which is one major reason workspaces are an unsuitable mechanism for isolating environments (e.g., isolating staging from production).
+
+* Workspaces are not visible in the code or on the terminal unless you run terraform workspace commands. When browsing the code, a module that has been deployed in one workspace looks exactly the same as a module deployed in 10 workspaces. This makes maintenance more difficult, because you don’t have a good picture of your infrastructure.
+
+* Putting the two previous items together, the result is that workspaces can be fairly error prone. The lack of visibility makes it easy to forget what workspace you’re in and accidentally deploy changes in the wrong one (e.g., accidentally running terraform destroy in a “production” workspace rather than a “staging” workspace), and because you must use the same authentication mechanism for all workspaces, you have no other layers of defense to protect against such errors.
+
+**Due to these drawbacks, workspaces are not a suitable mechanism for isolating one environment from another: e.g., isolating staging from production. To get proper isolation between environments, instead of workspaces, you’ll want to use file layout, which is our adopted approach.**
+
+### Use Terragrunt dependency blocks
+
+Breaking the code into multiple folders makes it more difficult to use resource dependencies. If your app code was defined in the same Terraform configuration files as the database code, that app code could directly access attributes of the database using an attribute reference (e.g., access the database address via aws_db_instance.foo.address). But if the app code and database code live in different folders, as I’ve recommended, you can no longer do that.
+
+One option is to use dependency blocks in Terragrunt, as you see in Chapter 10 of cite `terraform-up-and-running`. Another option is to use the `terraform_remote_state` data source.
+
+## References

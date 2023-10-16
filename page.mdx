@@ -1,21 +1,8 @@
-import { ArticleLayout } from '@/components/ArticleLayout'
-import Image from 'next/image'
-import terraform from './images/terraform-immutable-infrastructure.png'
-
-export const article = {
-  author: 'Adam Wathan',
-  date: '2023-10-20',
-  title: 'Rewriting the AI Book',
-  description:
-    'When we released the first version of cosmOS last year, it was written in Go. Go is a wonderful programming language, but it’s been a while since I’ve seen an article on the front page of Hacker News about rewriting some important tool in Go and I see articles on there about rewriting things in Rust every single week.',
-}
-
-export const metadata = {
-  title: article.title,
-  description: article.description,
-}
-
-export default (props) => <ArticleLayout article={article} {...props} />
+---
+title: 'This is a blog post'
+date: '2023-10-10'
+tages: ['terraform', 'infrastructure as code']
+---
 
 # Infrastructure as Code
 

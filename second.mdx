@@ -1,21 +1,8 @@
-import { ArticleLayout } from '@/components/ArticleLayout'
-import Image from 'next/image'
-import designSystem from './planetaria-design-system.png'
-
-export const article = {
-  author: 'Pantelis Monogioudis',
-  date: '2022-09-05',
-  title: 'Infrastructure as Code',
-  description:
-    'We adopted native terraform as the way to express IoC and at the same time allow for multi-cloud deployment.',
-}
-
-export const metadata = {
-  title: article.title,
-  description: article.description,
-}
-
-export default (props) => <ArticleLayout article={article} {...props} />
+---
+title: 'This is a second blog post'
+date: '2023-10-13'
+tags: ['terraform', 'infrastructure']
+---
 
 
 We adopted native terraform as the way to express IoC and at the same time allow for multi-cloud deployment. Our IoC bible is  cite `terraform-up-and-running`. We do not use the terraform CLI directly though but we follow the the recommendation of the IoC bible and use `terragrunt` as a wrapper around terraform.  Terragrunt offers significant Dont Repeat Yourself (DRY) benefits in our IoC code.

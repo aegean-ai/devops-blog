@@ -6,7 +6,7 @@ description: This is the description of the 1st blog post
 tags: ['terraform', 'infrastructure']
 ---
 
-import { PostLayout } from '@/components/PostLayout'
+import { PostLayout } from '@/components/RemotePostLayout'
 import Image from 'next/image'
 import terraform from './images/terraform-immutable-infrastructure.png'
 
@@ -22,7 +22,7 @@ export const metadata = {
   description: post.description,
 }
 
-export default (props) => <PostLayout post={post} {...props} />
+export default (props) => <RemotePostLayout post={post} {...props} />
 
 Infrastructure as Code
 

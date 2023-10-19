@@ -6,7 +6,6 @@ description: This is the description of the 1st blog post
 tags: ['terraform', 'infrastructure']
 ---
 
-
 import { RemotePostLayout } from '@/components/RemotePostLayout'
 import Image from 'next/image'
 import terraform from './images/terraform-immutable-infrastructure.png'
@@ -37,7 +36,7 @@ Please note that any reference to K8s in this document is also applicable to Nom
 
 There is a plethora of tools that one can select to implement infrastructure as a code. After reviewing many including CDK and CDK for terraform, we came to agree with the conclusion of Chapter 1 of cite`terraform-up-and-running`. 
 
-<Image src={terraform} alt="" />
+{/* <Image src={terraform} alt="" /> */}
 
 We use Packer to create a VM images that has Docker, Kubernetes, Nomad / Consul agents installed and we then use Terraform to deploy a cluster of servers, each of which runs these VM images, and the rest of our infrastructure, including the network topology (i.e., VPCs, subnets, route tables), data stores (e.g., MySQL, Redis), and load balancers. Finally, when the cluster boots up, it forms a Kubernetes / Nomad cluster supported by that you use to run and manage your Dockerized applications, as shown in the figure above. 
 

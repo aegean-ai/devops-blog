@@ -7,7 +7,7 @@ tags: ['terraform', 'infrastructure']
 ---
 
 
-import { PostLayout } from '@/components/PostLayout'
+import { RemotePostLayout } from '@/components/RemotePostLayout'
 import Image from 'next/image'
 import terraform from './images/terraform-immutable-infrastructure.png'
 
@@ -23,7 +23,7 @@ export const metadata = {
   description: post.description,
 }
 
-export default (props) => <PostLayout post={post} {...props} />
+export default (props) => <RemotePostLayout post={post} {...props} />
 
 We adopted native terraform as the way to express IoC and at the same time allow for multi-cloud deployment. Our IoC bible is  cite `terraform-up-and-running`. We do not use the terraform CLI directly though but we follow the the recommendation of the IoC bible and use `terragrunt` as a wrapper around terraform.  Terragrunt offers significant Dont Repeat Yourself (DRY) benefits in our IoC code.
 
